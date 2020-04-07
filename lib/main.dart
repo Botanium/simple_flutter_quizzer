@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'question_controller.dart';
 
 void main() {
   runApp(MyApp());
 }
+
+QuestionController qc = QuestionController();
 
 class MyApp extends StatelessWidget {
   @override
@@ -14,7 +17,14 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class QuizApp extends StatelessWidget {
+class QuizApp extends StatefulWidget {
+  @override
+  _QuizAppState createState() => _QuizAppState();
+}
+
+class _QuizAppState extends State<QuizApp> {
+  bool userPickedAnswer;
+  List<Widget> scores = [];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,13 +37,28 @@ class QuizApp extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
             Text(
-              'The question goes here',
+              qc.getQuestionText(),
               style: TextStyle(fontSize: 20, color: Colors.white),
               textAlign: TextAlign.center,
             ),
             FlatButton(
               color: Colors.green,
-              onPressed: () {},
+              onPressed: () {
+                bool correctAnswer = qc.getQuestionAsnwer();
+                userPickedAnswer = true;
+                setState(() {
+                  if (correctAnswer == userPickedAnswer) {
+                    scores.add(Icon(Icons.check, color: Colors.green));
+                    print("correct");
+                  } else {
+                    scores.add(Icon(Icons.close, color: Colors.red));
+                    print('wrong');
+                  }
+                  qc.getQuestionAsnwer();
+                });
+                qc.nextQuestion();
+                print('I got pressed');
+              },
               child: Text(
                 'True',
                 style: TextStyle(color: Colors.white),
@@ -41,12 +66,22 @@ class QuizApp extends StatelessWidget {
             ),
             FlatButton(
               color: Colors.red,
-              onPressed: () {},
+              onPressed: () {
+                setState(() {
+                  scores.add(Icon(Icons.check, color: Colors.green));
+                  qc.getQuestionAsnwer();
+                });
+                print('you clicked on false button');
+                print(scores);
+              },
               child: Text(
                 'False',
                 style: TextStyle(color: Colors.white),
               ),
             ),
+            Row(
+              children: scores,
+            )
           ],
         ),
       ),
